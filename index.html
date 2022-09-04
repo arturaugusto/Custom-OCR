@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title></title>
+  <script type="text/javascript" src="js/dom-to-image.min.js"></script>
+  <script type="text/javascript" src="js/workers-pool.js"></script>
+  <script type="text/javascript" src="js/utils.js"></script>
+  <script type="text/javascript" src="js/preprocess.js"></script>
+  <script type="text/javascript" src="js/dbscan.js"></script>
+  <script type="text/javascript" src="js/clusterize.js"></script>
+  <script type="text/javascript" src="js/ocr.js"></script>
+  <script type="text/javascript" src="js/drawBoxes.js"></script>
+  <script type="text/javascript" src="js/computeWeights.js"></script>
+  <script type="text/javascript" src="js/getWeights.js"></script>
+  <script type="text/javascript" src="js/fft.js"></script>
+
+  <style type="text/css">
+    @font-face {
+      font-family: 'segment7standard';
+      src: url('css/segment7standard-webfont.woff2') format('woff2'),
+          url('css/segment7standard-webfont.woff') format('woff');
+      font-weight: normal;
+      font-style: normal;
+    }
+    body {
+      background: #202124;
+    }
+    
+
+    #canvasProcessed, #roiCanvas {
+      position: absolute;
+    }
+
+    p, .panel {
+      color: whitesmoke;
+      display: flex;
+      justify-content: space-evenly;
+      flex-wrap: wrap;
+      font-family: monospace;
+      font-size: 24px;
+      margin: 12px;
+    }
+
+    input[type=number] {
+      font-size: 28px;
+    }
+    
+    input {
+      background: #1f2124;
+      border-width: 1px;
+      border-style: solid;
+      color: white;
+    }
+
+    input[type=checkbox] {
+      width: 36px;
+      height: 36px;
+    }
+
+
+  </style>
+  
+  <script type="text/javascript" src="https://github.com/PeculiarVentures/GammaCV/releases/download/v0.3.6/index.min.js"></script>
+
+</head>
+<body>
+
+  <div style="">
+    
+    <p>Font select</p>
+    <div style="display: flex;justify-content: center;">
+      <select size="5" style="font-size: 26px;" id="fontSelect">
+        <option style="font-family: cursive;">- + 0 1 2 3 . 4 5 6 , 7 8 9</option>
+        <option style="font-family: ui-monospace;">- + 0 1 2 3 . 4 5 6 , 7 8 9</option>
+        <option style="font-family: monospace;">- + 0 1 2 3 . 4 5 6 , 7 8 9</option>
+        <option style="font-family: sans-serif">- + 0 1 2 3 . 4 5 6 , 7 8 9</option>
+        <option style="font-family: segment7standard">- 0 1 2 3 . 4 5 6 7 8 9</option>
+      </select>
+    </div>
+    
+    <div style="display: flex;justify-content: center;">
+      <div id="styledElementWrap" style="padding: 14px;background: white;width: fit-content;white-space: nowrap;">
+        <div id="styledElement" style="border: none; font-size: 52px;width: fit-content;background: white;padding-top: 10px;">
+        </div>
+      </div>
+    </div>
+
+    <div style="display: none;">
+      eps: <input type="number" step="0.1" id="eps" value="2.5">
+    </div>
+
+    <div style="display: none;">
+      min_points: <input type="number" step="1" min="1" id="min_points" value="10">
+    </div>
+
+    <div style="display: none;">
+      <div>
+        cannyLow: <input type="number" min="0" max="1" step="0.01" id="cannyLow" value="0.5">
+      </div>
+      <div>
+        cannyHigh: <input type="number" min="0" max="1" step="0.01" id="cannyHigh" value="1">
+      </div>
+    </div>
+
+    <div id="canvasProcessedContainer" style="padding-bottom: 20px;display: flex;justify-content: center;">
+    </div>
+    
+    <div style="display: none;">
+      x:<span id="canvasProcessedX"></span>
+      y:<span id="canvasProcessedY"></span>
+    </div>
+  </div>
+
+  <div style="margin-top: 100px;">
+    <hr>
+
+    <p>Preprocessing</p>
+    <div class="panel">
+      <p>Threshold: <input type="number" min="1" max="255" step="1" id="threshold" value="100"></p>
+      <p>Invert: <input type="checkbox" id="invert" class="checkbox"></p>
+      <p>Blur: <input type="checkbox" id="blur" class="checkbox" checked></p>
+      <p>Dilate: <input type="checkbox" id="dilate" class="checkbox" checked></p>
+      <p>Erode: <input type="checkbox" id="erode" class="checkbox"></p>
+      <p>Noise Reduction: <input type="checkbox" id="noiseReduction" class="checkbox"></p>
+      
+    </div>
+
+  </div>
+
+
+  <div>
+    <hr>
+    <p>Infer from camera</p>
+    
+    <div style="display: flex;justify-content: center;">
+      <select id="videoSelect"></select>
+    </div>
+
+    <div id="canvasWrap" style="position:relative;display: flex;justify-content: center;">
+      <canvas id="roiCanvas" width="500" height="400" style="z-index: 2;"></canvas>
+      <div id="segmentedCanvasWrap">
+        <canvas id="segmentedCanvas"></canvas>
+      </div>
+    </div>
+
+
+    <hr>
+    
+    <p>Result</p>
+
+    <div style="height: 500px;">
+      <div id="canvasProcessedCamContainer" style="padding-bottom: 20px;display: flex;justify-content: center;">
+      </div>
+      <div id="ocrResult" style="color: white;font-size: 42px;display: flex;justify-content: center;">
+      </div>
+    </div>
+
+
+
+
+    <script type="module" src="js/index.js"></script>
+    <script type="text/javascript" src="js/camera.js"></script>
+
+  </div>
+
+</body>
+</html>
