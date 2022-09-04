@@ -14,9 +14,7 @@ function openCamera() {
   // session uses a context for optimize calculations and prevent recalculations
   // context actually a number which help algorythm to run operation efficiently  
   let context = 0;
-  // allocate memeory for storing a frame and calculations output
   let input
-  // construct operation grap which is actially a Canny Edge Detector
   
   let sess 
   let pipeline
@@ -211,6 +209,8 @@ function openCamera() {
     const rect = event.target.getBoundingClientRect()
     const x = event.offsetX || event.layerX
     const y = event.offsetY || event.layerY
+    let roiCanvasCtx = roiCanvas.getContext('2d')
+    
     if (event.type === 'mousedown' && !draging) {
       draging = true
       selCoord.x0 = x
@@ -218,13 +218,16 @@ function openCamera() {
       selCoord.y0 = y
       selCoord.y1 = y
     }
+    
     if ((event.type === 'mousemove') && draging) {
       selCoord.x1 = x
       selCoord.y1 = y
 
-      let roiCanvasCtx = roiCanvas.getContext('2d')
-      roiCanvasCtx.clearRect(0,0,roiCanvas.width,roiCanvas.height)
-      roiCanvasCtx.fillStyle = '#ffffff77';
+      roiCanvasCtx.clearRect(0,0,roiCanvas.width,roiCanvas.height);
+      roiCanvasCtx.fillStyle = '#ffffff00';
+      roiCanvasCtx.lineWidth = 1.8;
+      roiCanvasCtx.strokeStyle = "#00ff00";
+      roiCanvasCtx.strokeRect(selCoord.x0, selCoord.y0, selCoord.x1-selCoord.x0, selCoord.y1-selCoord.y0);
       roiCanvasCtx.fillRect(selCoord.x0, selCoord.y0, selCoord.x1-selCoord.x0, selCoord.y1-selCoord.y0);
     }
     

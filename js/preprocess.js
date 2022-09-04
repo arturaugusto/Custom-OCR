@@ -28,7 +28,6 @@ function preprocess(img, dataUrl, doFullPipeline, cb) {
       pipeline = gm.adaptiveThreshold(pipeline, 100, 10);
       
       if (invertBool) {
-        // console.log('invert!')
         const whiteTensor = new gm.Tensor('uint8', [height, width, 4]);
         whiteTensor.data.fill(255);
         pipeline = gm.sub(whiteTensor, pipeline);
