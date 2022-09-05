@@ -28,6 +28,7 @@
     }
     body {
       background: #202124;
+      font-family: monospace;
     }
     
 
@@ -61,6 +62,29 @@
       height: 36px;
     }
 
+    textarea {
+      font-size: 1.1pc;
+    }
+
+    /* width */
+    ::-webkit-scrollbar {
+      width: 10px;
+    }
+
+    /* Track */
+    ::-webkit-scrollbar-track {
+      background: #424242; 
+    }
+     
+    /* Handle */
+    ::-webkit-scrollbar-thumb {
+      background: #6b6b6b; 
+    }
+
+    /* Handle on hover */
+    ::-webkit-scrollbar-thumb:hover {
+      background: #7b7b7b; 
+    }
 
   </style>
   
@@ -71,7 +95,11 @@
 
   <div style="">
     
-    <p>Font select</p>
+    <div style="color: whitesmoke;">Developed by: Artur Augusto Martins | arturaugusto@gmail.com</div>
+
+
+
+    <p>Select a font</p>
     <div style="display: flex;justify-content: center;">
       <select size="5" style="font-size: 26px;" id="fontSelect">
         <option style="font-family: cursive;">- + 0 1 2 3 . 4 5 6 , 7 8 9</option>
@@ -82,6 +110,7 @@
       </select>
     </div>
     
+    <p>Training source:</p>
     <div style="display: flex;justify-content: center;">
       <div id="styledElementWrap" style="padding: 14px;background: white;width: fit-content;white-space: nowrap;">
         <div id="styledElement" style="border: none; font-size: 52px;width: fit-content;background: white;padding-top: 10px;">
@@ -118,7 +147,7 @@
   <div style="margin-top: 100px;">
     <hr>
 
-    <p>Preprocessing</p>
+    <p>Camera Preprocessing</p>
     <div class="panel">
       <p>Threshold: <input type="number" min="1" max="255" step="1" id="threshold" value="100"></p>
       <p>Invert: <input type="checkbox" id="invert" class="checkbox"></p>
@@ -134,7 +163,7 @@
 
   <div>
     <hr>
-    <p>Infer from camera</p>
+    <p>Select Region of Interest (single line)</p>
     
     <div style="display: flex;justify-content: center;">
       <select id="videoSelect"></select>
@@ -152,13 +181,28 @@
     
     <p>Result</p>
 
-    <div style="height: 500px;">
+    <div style="">
       <div id="canvasProcessedCamContainer" style="padding-bottom: 20px;display: flex;justify-content: center;">
       </div>
-      <div id="ocrResult" style="color: white;font-size: 42px;display: flex;justify-content: center;">
+      <div id="ocrResultWrap" style="color: white;font-size: 42px;display: flex;justify-content: center;">
+        <div id="ocrResult">---</div>
       </div>
+      <div id="ocrResultTime" style="color: white;font-size: 24px;display: flex;justify-content: center;"></div>
     </div>
 
+    <hr>
+
+    <p>Logging</p>
+    <p><input type="checkbox" id="startLog" class="checkbox" checked></p>
+    <p>
+      <textarea rows="10" cols="70" class="textarea is-radiusless" placeholder="" id="logOutput"></textarea>
+    </p>
+
+    <hr>
+
+    <p>Send to Web Socket</p>
+    <p><input type="checkbox" id="sendWs" class="checkbox"></p>
+    <p><input type="text" id="wsAddr" value="ws://127.0.0.1:8181"></p>
 
 
 

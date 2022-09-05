@@ -229,6 +229,10 @@ function openCamera() {
       roiCanvasCtx.strokeStyle = "#00ff00";
       roiCanvasCtx.strokeRect(selCoord.x0, selCoord.y0, selCoord.x1-selCoord.x0, selCoord.y1-selCoord.y0);
       roiCanvasCtx.fillRect(selCoord.x0, selCoord.y0, selCoord.x1-selCoord.x0, selCoord.y1-selCoord.y0);
+      
+      
+      let segmentedCanvasHeight = segmentedCanvas.height
+      document.getElementById('ocrResultWrap').style['padding-top'] = `${segmentedCanvasHeight}px`
     }
     
     if (event.type === 'mouseup' && draging) {

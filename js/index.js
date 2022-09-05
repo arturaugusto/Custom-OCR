@@ -58,23 +58,51 @@ document.getElementById('cannyHigh').addEventListener('change', train)
 document.getElementById('fontSelect').addEventListener('change', train)
 
 let doOcr = function() {
-  if (window.TRAINED_DATA) {
-    let segmentedCanvas = document.getElementById('segmentedCanvas')
-    let dataUrl = segmentedCanvas.toDataURL()
-    let segmentedCanvasHeight = segmentedCanvas.height
-    
-    getWeights(dataUrl, undefined, 'canvasProcessedCamContainer').then(weightsData => {
-      let [weights, groupsArray, ctx] = weightsData
-      let res = ocr(weights)
+  return new Promise((resolve, reject) => {
+    if (window.TRAINED_DATA) {
+      let segmentedCanvas = document.getElementById('segmentedCanvas')
+      let dataUrl = segmentedCanvas.toDataURL()
+      let segmentedCanvasHeight = segmentedCanvas.height
+      
+      getWeights(dataUrl, undefined, 'canvasProcessedCamContainer').then(weightsData => {
+        let [weights, groupsArray, ctx] = weightsData
+        let res = ocr(weights)
 
-      drawBoxes(groupsArray, ctx)
-      console.log(weights)
-      console.log(res)
-      document.getElementById('ocrResult').style['padding-top'] = `${segmentedCanvasHeight}px`
-      document.getElementById('ocrResult').innerText = res.text
-    })
-  }
+        drawBoxes(groupsArray, ctx)
+        console.log(weights)
+        console.log(res)
+        
+        document.getElementById('ocrResult').innerText = res.text
+        let time = new Date().toISOString().split('.')[0].replace('T',' ')
+        document.getElementById('ocrResultTime').innerText = time
+
+        let textLine = res.text + '\t\t' + time + '\n'
+        
+        if (document.getElementById('startLog').checked) {
+          let logOutputEl = document.getElementById('logOutput')
+          logOutputEl.value += textLine
+          logOutputEl.scrollTop = logOutputEl.scrollHeight;
+        }
+
+        if (document.getElementById('sendWs').checked) {
+          new WebSocket(document.getElementById('wsAddr').value).onopen = (evt) => {
+            evt.target.send(textLine)
+            window.setTimeout(() => evt.target.close(), 20)
+          }
+        }
+            
+        resolve()
+      })
+    }
+    resolve()
+  })
 }
 
 
-window.setInterval(doOcr, 1000)
+const doOcrLoop = () => {
+  doOcr()
+  .then(() => {
+    window.setTimeout(doOcrLoop, 1000)
+  })
+}
+doOcrLoop()
