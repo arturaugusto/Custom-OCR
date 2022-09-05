@@ -36,7 +36,7 @@ function openCamera() {
       pipeline = gm.gaussianBlur(pipeline, 3, 3);
     }
     
-    pipeline = gm.adaptiveThreshold(pipeline, parseFloat(document.getElementById('threshold').value), 0);
+    pipeline = gm.adaptiveThreshold(pipeline, parseFloat(document.getElementById('thresholdBox').value), parseFloat(document.getElementById('threshold').value));
 
     if (document.getElementById('invert').checked) {
       const whiteTensor = new gm.Tensor('uint8', [height, width, 4]);
@@ -48,7 +48,7 @@ function openCamera() {
     // pipeline = gm.cannyEdges(pipeline, 0.25, 0.75);
     
     if (document.getElementById('dilate').checked) {
-      pipeline = gm.dilate(pipeline, [1, 3]);
+      pipeline = gm.dilate(pipeline, [1, 6]);
     }
     
     if (document.getElementById('erode').checked) {
@@ -65,7 +65,7 @@ function openCamera() {
   //////////////////////////////////////////
   setPipeline()
 
-  ;['threshold', 'invert', 'blur','dilate','erode', 'noiseReduction'].forEach(op => {
+  ;['threshold', 'invert', 'blur','dilate','erode', 'noiseReduction', 'thresholdBox'].forEach(op => {
     document.getElementById(op).addEventListener('change', () => {
       sess.destroy()
       setPipeline()

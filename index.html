@@ -103,8 +103,6 @@
     <div style="display: flex;justify-content: center;">
       <select size="5" style="font-size: 26px;" id="fontSelect">
         <option style="font-family: cursive;">- + 0 1 2 3 . 4 5 6 , 7 8 9</option>
-        <option style="font-family: ui-monospace;">- + 0 1 2 3 . 4 5 6 , 7 8 9</option>
-        <option style="font-family: monospace;">- + 0 1 2 3 . 4 5 6 , 7 8 9</option>
         <option style="font-family: sans-serif">- + 0 1 2 3 . 4 5 6 , 7 8 9</option>
         <option style="font-family: segment7standard">- 0 1 2 3 . 4 5 6 7 8 9</option>
       </select>
@@ -147,14 +145,16 @@
   <div style="margin-top: 100px;">
     <hr>
 
-    <p>Camera Preprocessing</p>
+    <p>Camera Preprocessing (set white text on black background)</p>
     <div class="panel">
-      <p>Threshold: <input type="number" min="1" max="255" step="1" id="threshold" value="100"></p>
-      <p>Invert: <input type="checkbox" id="invert" class="checkbox"></p>
+      <p>Invert: <input type="checkbox" id="invert" class="checkbox" checked></p>
       <p>Blur: <input type="checkbox" id="blur" class="checkbox" checked></p>
       <p>Dilate: <input type="checkbox" id="dilate" class="checkbox" checked></p>
       <p>Erode: <input type="checkbox" id="erode" class="checkbox"></p>
-      <p>Noise Reduction: <input type="checkbox" id="noiseReduction" class="checkbox"></p>
+      <p style="display: none;">Noise Reduction: <input type="checkbox" id="noiseReduction" class="checkbox"></p>
+
+      <p>Threshold: <input type="number" min="1" max="255" step="1" id="threshold" value="40"></p>
+      <p>Contrast: <input type="number" min="1" max="255" step="1" id="thresholdBox" value="20"></p>
       
     </div>
 
