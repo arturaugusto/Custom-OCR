@@ -60,9 +60,9 @@ document.getElementById('fontSelect').addEventListener('change', train)
 let doOcr = function() {
   return new Promise((resolve, reject) => {
     if (window.TRAINED_DATA) {
-      let segmentedCanvas = document.getElementById('segmentedCanvas')
-      let dataUrl = segmentedCanvas.toDataURL()
-      let segmentedCanvasHeight = segmentedCanvas.height
+      let segmentedCanvasCrop = document.getElementById('segmentedCanvasCrop')
+      let dataUrl = segmentedCanvasCrop.toDataURL()
+      let segmentedCanvasCropHeight = segmentedCanvasCrop.height
       
       getWeights(dataUrl, undefined, 'canvasProcessedCamContainer').then(weightsData => {
         let [weights, groupsArray, ctx] = weightsData
@@ -102,7 +102,8 @@ let doOcr = function() {
 const doOcrLoop = () => {
   doOcr()
   .then(() => {
-    window.setTimeout(doOcrLoop, 1000)
+    let interval = parseFloat(document.getElementById('logInterval').value)
+    window.setTimeout(doOcrLoop, interval)
   })
 }
 doOcrLoop()

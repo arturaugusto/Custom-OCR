@@ -11,10 +11,15 @@ function openCamera() {
   const segmentedCanvas = document.getElementById('segmentedCanvas')
   const segmentedCanvasCtx = segmentedCanvas.getContext('2d')
 
+  let segmentedCanvasCrop = document.getElementById('segmentedCanvasCrop')
+  let segmentedCanvasCropCtx = segmentedCanvasCrop.getContext('2d')
+
+
   // session uses a context for optimize calculations and prevent recalculations
   // context actually a number which help algorythm to run operation efficiently  
   let context = 0;
-  let input
+  let input = new gm.Tensor('uint8', [height, width, 4]);
+  let inputRoi = new gm.Tensor('uint8', [height, width, 4]);
   
   let sess 
   let pipeline
@@ -23,8 +28,7 @@ function openCamera() {
   //////////////////////////////////////////
   const setPipeline = () => {
     sess = new gm.Session();
-    input = new gm.Tensor('uint8', [height, width, 4]);
-    pipeline = input
+    pipeline = inputRoi
     
     if (document.getElementById('noiseReduction').checked) {
       pipeline = gm.norm(pipeline, 'l2') //l2, minmax
@@ -80,40 +84,73 @@ function openCamera() {
   const tick = () => {
     document.getElementById('canvasWrap').style.height = `${canvasProcessed.clientHeight+20}px`
         
+    
+
+    gm.canvasFromTensor(canvasProcessed, input);
+    // Read current in to the tensor
+    gmStream.getImageBuffer(input);
+
     let roiNorm = [
       Math.min(selCoord.x0, selCoord.x1),
       Math.min(selCoord.y0, selCoord.y1),
       Math.max(selCoord.x0, selCoord.x1),
       Math.max(selCoord.y0, selCoord.y1)
     ]
-    segmentedCanvas.width = roiNorm[2] - roiNorm[0]
-    segmentedCanvas.height = roiNorm[3] - roiNorm[1]
+    
+    // segmentedCanvas.width = roiNorm[2] - roiNorm[0]
+    // segmentedCanvas.height = roiNorm[3] - roiNorm[1]    
+
+    segmentedCanvas.width = width
+    segmentedCanvas.height = height
+
+
     segmentedCanvasCtx.clearRect(0,0,segmentedCanvas.width,segmentedCanvas.height)
 
-    segmentedCanvasCtx.drawImage(canvasProcessed, 
-      roiNorm[0], roiNorm[1], roiNorm[2] - roiNorm[0], roiNorm[3] - roiNorm[1],
-      0, 0, (roiNorm[2] - roiNorm[0]), (roiNorm[3] - roiNorm[1])
-    )
-
-    if (segmentedCanvas.width * segmentedCanvas.height > 10) {}
+    let t = input.clone()
     
-
-    // Read current in to the tensor
-    gmStream.getImageBuffer(input);
-
+    // set tensor pixels outside roi black
+    for (var i = 0; i < width; i++) {
+      for (var j = 0; j < height; j++) {
+        if ((i < roiNorm[0] || i > roiNorm[2]) || (j < roiNorm[1] || j > roiNorm[3])) {
+          t.set(j, i, 0, 255)
+          t.set(j, i, 1, 255)
+          t.set(j, i, 2, 255)
+          t.set(j, i, 3, 255)
+        }
+      }
+    }
+    
+    inputRoi.assign(t.data)
+    
     // finaly run operation on GPU and then write result in to output tensor
     sess.runOp(pipeline, context, output);
+    
+    // create processed canvas
+    const canvasProcessedPre = gm.canvasCreate(width, height)
+    gm.canvasFromTensor(canvasProcessedPre, output)
+    segmentedCanvasCtx.drawImage(canvasProcessedPre, 0, 0, width, height, 0, 0, width, height)
 
-    // draw result into canvas
-    gm.canvasFromTensor(canvasProcessed, output);
+    // get roi dimensions
+    let widthRoi = roiNorm[2] - roiNorm[0]
+    let heightRoi = roiNorm[3] - roiNorm[1]
 
+    // draw on crop canvas
+    segmentedCanvasCrop.width = widthRoi
+    segmentedCanvasCrop.height = heightRoi
+    segmentedCanvasCropCtx.drawImage(segmentedCanvas, roiNorm[0], roiNorm[1], widthRoi, heightRoi, 0, 0, widthRoi, heightRoi)
+
+    // let canvasProcessedCtx = canvasProcessed.getContext('2d')
+    // canvasProcessedCtx.drawImage(segmentedCanvas, roiNorm[0], roiNorm[1], width, height, 0, 0, widthRoi, heightRoi)
+
+    // segmentedCanvasCtx.drawImage(canvasProcessed, 
+    //   roiNorm[0], roiNorm[1], roiNorm[2] - roiNorm[0], roiNorm[3] - roiNorm[1],
+    //   0, 0, (roiNorm[2] - roiNorm[0]), (roiNorm[3] - roiNorm[1])
+    // )
 
     // if we would like to be graph recalculated we need 
     // to change the context for next frame
     context += 1;
     requestAnimationFrame(tick);
-
-
   }
 
 
@@ -231,8 +268,8 @@ function openCamera() {
       roiCanvasCtx.fillRect(selCoord.x0, selCoord.y0, selCoord.x1-selCoord.x0, selCoord.y1-selCoord.y0);
       
       
-      let segmentedCanvasHeight = segmentedCanvas.height
-      document.getElementById('ocrResultWrap').style['padding-top'] = `${segmentedCanvasHeight}px`
+      let segmentedCanvasCropHeight = segmentedCanvasCrop.height
+      document.getElementById('ocrResultWrap').style['padding-top'] = `${segmentedCanvasCropHeight}px`
     }
     
     if (event.type === 'mouseup' && draging) {

@@ -145,27 +145,8 @@
     </div>
   </div>
 
+
   <div style="margin-top: 100px;">
-    <hr>
-
-    <p>Camera Preprocessing (set white text on black background)</p>
-
-    <div class="panel">
-      <p>Invert: <input type="checkbox" id="invert" class="checkbox" checked></p>
-      <p>Blur: <input type="checkbox" id="blur" class="checkbox" checked></p>
-      <p>Dilate: <input type="checkbox" id="dilate" class="checkbox" checked></p>
-      <p>Erode: <input type="checkbox" id="erode" class="checkbox"></p>
-      <p style="display: none;">Noise Reduction: <input type="checkbox" id="noiseReduction" class="checkbox"></p>
-
-      <p>Threshold: <input type="number" min="1" max="255" step="1" id="threshold" value="40"></p>
-      <p>Contrast: <input type="number" min="1" max="255" step="1" id="thresholdBox" value="20"></p>
-      
-    </div>
-
-  </div>
-
-
-  <div>
     <hr>
     <p>Select Region of Interest (single line)</p>
     
@@ -173,15 +154,39 @@
       <select id="videoSelect"></select>
     </div>
 
+    <canvas id="segmentedCanvas" width="500" height="400" style="visibility: collapse;height: 0px;"></canvas>
+
     <div id="canvasWrap" style="position:relative;display: flex;justify-content: center;">
       <canvas id="roiCanvas" width="500" height="400" style="z-index: 2;cursor: crosshair;"></canvas>
       <div id="segmentedCanvasWrap">
-        <canvas id="segmentedCanvas"></canvas>
       </div>
     </div>
 
+    <hr>
+
+
+    <div>
+      <p>Camera Preprocessing (set white text on black background)</p>
+      <div class="panel">
+        <p>Invert: <input type="checkbox" id="invert" class="checkbox" checked></p>
+        <p>Blur: <input type="checkbox" id="blur" class="checkbox" checked></p>
+        <p>Dilate: <input type="checkbox" id="dilate" class="checkbox" checked></p>
+        <p>Erode: <input type="checkbox" id="erode" class="checkbox"></p>
+        <p style="display: none;">Noise Reduction: <input type="checkbox" id="noiseReduction" class="checkbox"></p>
+
+        <p>Threshold: <input type="number" min="1" max="255" step="1" id="threshold" value="50"></p>
+        <p>Contrast: <input type="number" min="1" max="255" step="1" id="thresholdBox" value="60"></p>
+        
+      </div>
+      
+      <div id="canvasWrap" style="position:relative;display: flex;justify-content: center;">
+        <canvas id="segmentedCanvasCrop"></canvas>
+      </div>
+
+    </div>
 
     <hr>
+
     
     <p>Result</p>
 
@@ -198,6 +203,8 @@
 
     <p>Logging</p>
     <p><input type="checkbox" id="startLog" class="checkbox" checked></p>
+    <p>Interval (ms): <input type="number" min="300" id="logInterval" value="1000"></p>
+    
     <p>
       <textarea rows="10" cols="70" class="textarea is-radiusless" placeholder="" id="logOutput"></textarea>
     </p>
