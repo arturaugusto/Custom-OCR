@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title></title>
+  <script type="text/javascript" src="js/otsu.js"></script>
   <script type="text/javascript" src="js/dom-to-image.min.js"></script>
   <script type="text/javascript" src="js/workers-pool.js"></script>
   <script type="text/javascript" src="js/utils.js"></script>
@@ -120,7 +121,7 @@
     </div>
 
     <div style="display: none;">
-      eps: <input type="number" step="0.1" id="eps" value="2.5">
+      eps: <input type="number" step="0.1" id="eps" value="2.3">
     </div>
 
     <div style="display: none;">
@@ -169,13 +170,13 @@
       <p>Camera Preprocessing (set white text on black background)</p>
       <div class="panel">
         <p>Invert: <input type="checkbox" id="invert" class="checkbox" checked></p>
-        <p>Blur: <input type="checkbox" id="blur" class="checkbox" checked></p>
-        <p>Dilate: <input type="checkbox" id="dilate" class="checkbox" checked></p>
+        <!-- <p>Blur: <input type="checkbox" id="blur" class="checkbox" checked></p> -->
+        <p style="display: none;">Dilate: <input type="checkbox" id="dilate" class="checkbox" checked></p>
         <p>Erode: <input type="checkbox" id="erode" class="checkbox"></p>
-        <p style="display: none;">Noise Reduction: <input type="checkbox" id="noiseReduction" class="checkbox"></p>
+        <p>Erode More: <input type="checkbox" id="erodeMore" class="checkbox"></p>
 
-        <p>Threshold: <input type="number" min="1" max="255" step="1" id="threshold" value="50"></p>
-        <p>Contrast: <input type="number" min="1" max="255" step="1" id="thresholdBox" value="170"></p>
+        <!-- <p>Threshold: <input type="number" min="1" max="255" step="1" id="threshold" value="50"></p> -->
+        <p>Contrast: <input type="number" min="1" max="500" step="1" id="gamma" value="20"></p>
         
       </div>
       

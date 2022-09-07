@@ -30,34 +30,36 @@ function openCamera() {
     sess = new gm.Session();
     pipeline = inputRoi
     
-    if (document.getElementById('noiseReduction').checked) {
-      pipeline = gm.norm(pipeline, 'l2') //l2, minmax
-    }
+    // pipeline = gm.grayscale(pipeline);
     
-    pipeline = gm.grayscale(pipeline);
+    pipeline = gm.gaussianBlur(pipeline, 3, 3);
+    // if (document.getElementById('blur').checked) {
+    //   pipeline = gm.gaussianBlur(pipeline, 3, 3);
+    // }
     
-    if (document.getElementById('blur').checked) {
-      pipeline = gm.gaussianBlur(pipeline, 3, 3);
-    }
-    
-    pipeline = gm.adaptiveThreshold(pipeline, parseFloat(document.getElementById('thresholdBox').value), parseFloat(document.getElementById('threshold').value));
+    // pipeline = gm.adaptiveThreshold(pipeline, parseFloat(document.getElementById('thresholdBox').value), parseFloat(document.getElementById('threshold').value));
 
-    if (document.getElementById('invert').checked) {
-      const whiteTensor = new gm.Tensor('uint8', [height, width, 4]);
-      whiteTensor.data.fill(255);
-      pipeline = gm.sub(whiteTensor, pipeline);
-    }
+    // if (document.getElementById('invert').checked) {
+    //   const whiteTensor = new gm.Tensor('uint8', [height, width, 4]);
+    //   whiteTensor.data.fill(255);
+    //   pipeline = gm.sub(whiteTensor, pipeline);
+    // }
 
     // pipeline = gm.sobelOperator(pipeline);
     // pipeline = gm.cannyEdges(pipeline, 0.25, 0.75);
     
     if (document.getElementById('dilate').checked) {
-      pipeline = gm.dilate(pipeline, [1, 6]);
+      pipeline = gm.dilate(pipeline, [1, 3]);
     }
     
     if (document.getElementById('erode').checked) {
       pipeline = gm.erode(pipeline, [1, 3]);
     }
+
+    if (document.getElementById('erodeMore').checked) {
+      pipeline = gm.erode(pipeline, [1, 6]);
+    }
+
 
     // initialize graph
     sess.init(pipeline);
@@ -69,7 +71,7 @@ function openCamera() {
   //////////////////////////////////////////
   setPipeline()
 
-  ;['threshold', 'invert', 'blur','dilate','erode', 'noiseReduction', 'thresholdBox'].forEach(op => {
+  ;['dilate', 'erode', 'erodeMore'].forEach(op => {
     document.getElementById(op).addEventListener('change', () => {
       sess.destroy()
       setPipeline()
@@ -128,7 +130,10 @@ function openCamera() {
     // create processed canvas
     const canvasProcessedPre = gm.canvasCreate(width, height)
     gm.canvasFromTensor(canvasProcessedPre, output)
+    
     segmentedCanvasCtx.drawImage(canvasProcessedPre, 0, 0, width, height, 0, 0, width, height)
+
+
 
     // get roi dimensions
     let widthRoi = roiNorm[2] - roiNorm[0]
@@ -139,17 +144,25 @@ function openCamera() {
     let heightRoiResult = heightRoi
     let widthRoiResult = widthRoi
     
-    let maxHeight = 60
+    let maxHeight = 75
     if (heightRoiResult > maxHeight) {
       heightRoiResult = maxHeight
       let ratio = heightRoiResult/heightRoi
       widthRoiResult = Math.round(widthRoiResult*ratio)
     }
-
+    
     // draw on crop canvas
     segmentedCanvasCrop.width = widthRoiResult
     segmentedCanvasCrop.height = heightRoiResult
+    
     segmentedCanvasCropCtx.drawImage(segmentedCanvas, roiNorm[0], roiNorm[1], widthRoi, heightRoi, 0, 0, widthRoiResult, heightRoiResult)
+    
+    if (widthRoiResult*heightRoiResult > 20) {
+      preprocessCroped(segmentedCanvasCropCtx, segmentedCanvasCrop, widthRoiResult, heightRoiResult)
+
+
+    }
+    // .....
 
     context += 1;
     requestAnimationFrame(tick);
