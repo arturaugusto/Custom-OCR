@@ -56,7 +56,7 @@ function computeWeights(groupsArray, ctx, groundTruth) {
       baseY: baseY,
       topY: topY,
       isPunctuation: group.y0-baseY < (topY-baseY)/2,
-      isThin: aspectRatio < 0.3,
+      isThin: aspectRatio < 0.3, // todo: check for 7
       char: groundTruth ? groundTruth[groupIndex] : undefined
     }
   })

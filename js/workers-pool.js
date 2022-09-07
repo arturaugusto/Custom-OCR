@@ -22,18 +22,34 @@ self.onmessage=function(e){
         blob = blob.getBlob()
     }
 
-    let workers = Array(n || navigator.hardwareConcurrency || 4).fill().map((_, i) => i).map(() => {
-        let worker = new Worker(URL.createObjectURL(blob))
-        return worker
-    })
+    let workers
 
-    function run(args) {
+    function setUpWorkers() {
+        workers = Array(n || navigator.hardwareConcurrency || 4).fill().map((_, i) => i).map(() => {
+            let worker = new Worker(URL.createObjectURL(blob))
+            return worker
+        })
+    }
+    setUpWorkers()
+
+    function run(args, timeout) {
         /**
          * args: Array[Array]
          * 
          * return: Promise
          * */
+
+
+
         return new Promise((resolve, reject) => {
+            
+            if (timeout) {
+                window.setTimeout(() => {
+                    terminate()
+                    reject()
+                }, timeout)
+            }
+
             let resultsBuffer = args.map((_, i) => Object({
                 done: false,
                 result: undefined,
@@ -79,6 +95,17 @@ self.onmessage=function(e){
         })
     }
     this.run = run
+    
+    function terminate() {
+        workers.forEach(worker => {
+            worker.terminate()
+        })
+        setUpWorkers()
+    }
+    this.terminate = terminate
+
+
+
 }
 
 

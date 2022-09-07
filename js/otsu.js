@@ -82,11 +82,12 @@ function binarize(threshold, context, w, h) {
     
     for(var i = 0; i < data.length; i += 4) {
         var brightness = RED_INTENCITY_COEF * data[i] + GREEN_INTENCITY_COEF * data[i + 1] + BLUE_INTENCITY_COEF * data[i + 2];
-        if (document.getElementById('invert').checked) {
-          val = ((brightness > threshold) ? 0 : 255);
-        } else {
-          val = ((brightness > threshold) ? 255 : 0);
-        }
+        // if (document.getElementById('invert').checked) {
+        //   val = ((brightness > threshold) ? 0 : 255);
+        // } else {
+        //   val = ((brightness > threshold) ? 255 : 0);
+        // }
+        val = ((brightness > threshold) ? 255 : 0);
         data[i] = val;
         data[i + 1] = val;
         data[i + 2] = val;

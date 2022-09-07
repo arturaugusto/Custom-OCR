@@ -1,14 +1,14 @@
 function dbscan(data) {
   let min_points = data.min_points
-  let eps = data.eps// * 10000
+  let eps = data.eps * 10000
 
   let dim = data.inputs[0].length
   
   let dataFlat = data.inputs.flat()
 
-  // for (var i = dataFlat.length - 1; i >= 0; i--) {
-  //   dataFlat[i] = parseInt(dataFlat[i]*10000, 10)
-  // }
+  for (var i = dataFlat.length - 1; i >= 0; i--) {
+    dataFlat[i] = parseInt(dataFlat[i]*10000, 10)
+  }
 
 
   let size = dataFlat.length
@@ -86,25 +86,25 @@ function dbscan(data) {
 
 
   // // add non core points (edge) to close clusters
-  // for (let i = 0; i < size; i+=dim) {
+  for (let i = 0; i < size; i+=dim) {
     
-  //   // skip if is a core point
-  //   if (buffer[i/dim*bufferStepSize] === 1) continue
+    // skip if is a core point
+    if (buffer[i/dim*bufferStepSize] === 1) continue
     
-  //   // skip if clusterId already assigned
-  //   if (buffer[i/dim*bufferStepSize+1] !== -1) continue
+    // skip if clusterId already assigned
+    if (buffer[i/dim*bufferStepSize+1] !== -1) continue
 
-  //   for (let j = 0; j < size; j+=dim) {
+    for (let j = 0; j < size; j+=dim) {
 
-  //     // compute euclidian distance
-  //     let sumSquare = 0
-  //     for (let k = 0; k < dim; k++) sumSquare += Math.pow(dataFlat[i+k]-dataFlat[j+k], 2)
-  //     if (Math.sqrt(sumSquare) < eps) {
-  //       buffer[i/dim*bufferStepSize+1] = buffer[j/dim*bufferStepSize+1]
-  //       // TODO: shoud we set anywhere that this is a edge?
-  //     }
-  //   }
-  // }
+      // compute euclidian distance
+      let sumSquare = 0
+      for (let k = 0; k < dim; k++) sumSquare += Math.pow(dataFlat[i+k]-dataFlat[j+k], 2)
+      if (Math.sqrt(sumSquare) < eps) {
+        buffer[i/dim*bufferStepSize+1] = buffer[j/dim*bufferStepSize+1]
+        // TODO: shoud we set anywhere that this is a edge?
+      }
+    }
+  }
   
   return buffer.filter((x, i) => i % 2)
 }

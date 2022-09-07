@@ -30,7 +30,13 @@ function openCamera() {
     sess = new gm.Session();
     pipeline = inputRoi
     
-    // pipeline = gm.grayscale(pipeline);
+    pipeline = gm.grayscale(pipeline);
+    
+    if (document.getElementById('invert').checked) {
+      const whiteTensor = new gm.Tensor('uint8', [height, width, 4]);
+      whiteTensor.data.fill(255);
+      pipeline = gm.sub(whiteTensor, pipeline);
+    }
     
     pipeline = gm.gaussianBlur(pipeline, 3, 3);
     // if (document.getElementById('blur').checked) {
@@ -39,27 +45,21 @@ function openCamera() {
     
     // pipeline = gm.adaptiveThreshold(pipeline, parseFloat(document.getElementById('thresholdBox').value), parseFloat(document.getElementById('threshold').value));
 
-    // if (document.getElementById('invert').checked) {
-    //   const whiteTensor = new gm.Tensor('uint8', [height, width, 4]);
-    //   whiteTensor.data.fill(255);
-    //   pipeline = gm.sub(whiteTensor, pipeline);
-    // }
 
     // pipeline = gm.sobelOperator(pipeline);
     // pipeline = gm.cannyEdges(pipeline, 0.25, 0.75);
     
-    if (document.getElementById('dilate').checked) {
-      pipeline = gm.dilate(pipeline, [1, 3]);
-    }
+    // if (document.getElementById('dilate').checked) {
+    //   pipeline = gm.dilate(pipeline, [1, 3]);
+    // }
     
     if (document.getElementById('erode').checked) {
-      pipeline = gm.erode(pipeline, [1, 3]);
+      pipeline = gm.dilate(pipeline, [1, 3]);
     }
 
     if (document.getElementById('erodeMore').checked) {
-      pipeline = gm.erode(pipeline, [1, 6]);
+      pipeline = gm.dilate(pipeline, [1, 6]);
     }
-
 
     // initialize graph
     sess.init(pipeline);
@@ -71,7 +71,7 @@ function openCamera() {
   //////////////////////////////////////////
   setPipeline()
 
-  ;['dilate', 'erode', 'erodeMore'].forEach(op => {
+  ;['invert', 'dilate', 'erode', 'erodeMore'].forEach(op => {
     document.getElementById(op).addEventListener('change', () => {
       sess.destroy()
       setPipeline()

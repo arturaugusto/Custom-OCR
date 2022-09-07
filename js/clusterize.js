@@ -57,11 +57,13 @@ function clusterize(canvasProcessed, eps, min_points) {
         group.x1 = x1
 
         return group
-      }).sort((a, b) => a.x0 - b.x0)
+      })
+      .sort((a, b) => a.x0 - b.x0)
 
       // return groupsArray
       return resolve(groupsArray)
     }).catch(err => {
+      wp.terminate()
       throw 'dbscan error'
     })
   })
