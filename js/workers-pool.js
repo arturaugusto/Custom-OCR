@@ -1,4 +1,4 @@
-function WorkersPool(fun) {
+function WorkersPool(fun, n) {
     /**
      * fun: Function
      * */
@@ -22,7 +22,7 @@ self.onmessage=function(e){
         blob = blob.getBlob()
     }
 
-    let workers = Array(navigator.hardwareConcurrency || 4).fill().map((_, i) => i).map(() => {
+    let workers = Array(n || navigator.hardwareConcurrency || 4).fill().map((_, i) => i).map(() => {
         let worker = new Worker(URL.createObjectURL(blob))
         return worker
     })

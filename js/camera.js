@@ -134,21 +134,23 @@ function openCamera() {
     let widthRoi = roiNorm[2] - roiNorm[0]
     let heightRoi = roiNorm[3] - roiNorm[1]
 
+    
+    // limit height and adjust aspec ratio
+    let heightRoiResult = heightRoi
+    let widthRoiResult = widthRoi
+    
+    let maxHeight = 60
+    if (heightRoiResult > maxHeight) {
+      heightRoiResult = maxHeight
+      let ratio = heightRoiResult/heightRoi
+      widthRoiResult = Math.round(widthRoiResult*ratio)
+    }
+
     // draw on crop canvas
-    segmentedCanvasCrop.width = widthRoi
-    segmentedCanvasCrop.height = heightRoi
-    segmentedCanvasCropCtx.drawImage(segmentedCanvas, roiNorm[0], roiNorm[1], widthRoi, heightRoi, 0, 0, widthRoi, heightRoi)
+    segmentedCanvasCrop.width = widthRoiResult
+    segmentedCanvasCrop.height = heightRoiResult
+    segmentedCanvasCropCtx.drawImage(segmentedCanvas, roiNorm[0], roiNorm[1], widthRoi, heightRoi, 0, 0, widthRoiResult, heightRoiResult)
 
-    // let canvasProcessedCtx = canvasProcessed.getContext('2d')
-    // canvasProcessedCtx.drawImage(segmentedCanvas, roiNorm[0], roiNorm[1], width, height, 0, 0, widthRoi, heightRoi)
-
-    // segmentedCanvasCtx.drawImage(canvasProcessed, 
-    //   roiNorm[0], roiNorm[1], roiNorm[2] - roiNorm[0], roiNorm[3] - roiNorm[1],
-    //   0, 0, (roiNorm[2] - roiNorm[0]), (roiNorm[3] - roiNorm[1])
-    // )
-
-    // if we would like to be graph recalculated we need 
-    // to change the context for next frame
     context += 1;
     requestAnimationFrame(tick);
   }
@@ -257,6 +259,7 @@ function openCamera() {
     }
     
     if ((event.type === 'mousemove') && draging) {
+      window.CONF_CHANGING = true
       selCoord.x1 = x
       selCoord.y1 = y
 
@@ -275,6 +278,7 @@ function openCamera() {
     if (event.type === 'mouseup' && draging) {
       console.log(selCoord)
       draging = false
+      window.CONF_CHANGING = false
     }
     return {x: x, y: y}
   }

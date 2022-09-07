@@ -59,7 +59,8 @@ document.getElementById('fontSelect').addEventListener('change', train)
 
 let doOcr = function() {
   return new Promise((resolve, reject) => {
-    if (window.TRAINED_DATA) {
+    // if (window.TRAINED_DATA) {
+    if (window.TRAINED_DATA && !window.CONF_CHANGING) {
       let segmentedCanvasCrop = document.getElementById('segmentedCanvasCrop')
       let dataUrl = segmentedCanvasCrop.toDataURL()
       let segmentedCanvasCropHeight = segmentedCanvasCrop.height
@@ -98,7 +99,7 @@ let doOcr = function() {
   })
 }
 
-
+window.CONF_CHANGING = false
 const doOcrLoop = () => {
   doOcr()
   .then(() => {
