@@ -171,12 +171,17 @@
       <div class="panel">
         <p>Invert: <input type="checkbox" id="invert" class="checkbox" checked></p>
         <!-- <p>Blur: <input type="checkbox" id="blur" class="checkbox" checked></p> -->
-        <p style="display: none;">Dilate: <input type="checkbox" id="dilate" class="checkbox" checked></p>
+        <!-- <p style="display: none;">Dilate: <input type="checkbox" id="dilate" class="checkbox" checked></p>
         <p>Erode: <input type="checkbox" id="erode" class="checkbox"></p>
-        <p>Erode More: <input type="checkbox" id="erodeMore" class="checkbox"></p>
+        <p>Erode More: <input type="checkbox" id="erodeMore" class="checkbox" checked></p> -->
+
+        <p>V erode/dilate:<input type="range" id="erodeDilateVertical" min="-12" max="12" step="3" value="3"></p>
+        <p>H erode/dilate:<input type="range" id="erodeDilateHorizontal" min="-6" max="6" step="3" value="0"></p>
+        
+
 
         <!-- <p>Threshold: <input type="number" min="1" max="255" step="1" id="threshold" value="50"></p> -->
-        <p>Contrast: <input type="number" min="1" max="500" step="1" id="gamma" value="20"></p>
+        <p>Contrast: <input type="number" min="1" max="100" step="0.5" id="gamma" value="10"></p>
         
       </div>
       

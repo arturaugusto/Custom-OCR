@@ -31,14 +31,34 @@ function openCamera() {
     pipeline = inputRoi
     
     pipeline = gm.grayscale(pipeline);
-    
+    pipeline = gm.gaussianBlur(pipeline, 3, 3);
+
+
     if (document.getElementById('invert').checked) {
       const whiteTensor = new gm.Tensor('uint8', [height, width, 4]);
       whiteTensor.data.fill(255);
       pipeline = gm.sub(whiteTensor, pipeline);
     }
+
+    let erodeDilateVertical = parseFloat(document.getElementById('erodeDilateVertical').value)
+
+    if (erodeDilateVertical > 0) {
+      pipeline = gm.dilate(pipeline, [1, erodeDilateVertical]);
+    }
+    if (erodeDilateVertical < 0) {
+      pipeline = gm.erode(pipeline, [1, -erodeDilateVertical]);
+    }
+
+    let erodeDilateHorizontal = parseFloat(document.getElementById('erodeDilateHorizontal').value)
+
+    if (erodeDilateHorizontal > 0) {
+      pipeline = gm.dilate(pipeline, [erodeDilateHorizontal, 1]);
+    }
+    if (erodeDilateHorizontal < 0) {
+      pipeline = gm.erode(pipeline, [-erodeDilateHorizontal, 1]);
+    }    
     
-    pipeline = gm.gaussianBlur(pipeline, 3, 3);
+    
     // if (document.getElementById('blur').checked) {
     //   pipeline = gm.gaussianBlur(pipeline, 3, 3);
     // }
@@ -53,13 +73,6 @@ function openCamera() {
     //   pipeline = gm.dilate(pipeline, [1, 3]);
     // }
     
-    if (document.getElementById('erode').checked) {
-      pipeline = gm.dilate(pipeline, [1, 3]);
-    }
-
-    if (document.getElementById('erodeMore').checked) {
-      pipeline = gm.dilate(pipeline, [1, 6]);
-    }
 
     // initialize graph
     sess.init(pipeline);
@@ -71,7 +84,7 @@ function openCamera() {
   //////////////////////////////////////////
   setPipeline()
 
-  ;['invert', 'dilate', 'erode', 'erodeMore'].forEach(op => {
+  ;['invert', 'erodeDilateVertical', 'erodeDilateHorizontal'].forEach(op => {
     document.getElementById(op).addEventListener('change', () => {
       sess.destroy()
       setPipeline()
@@ -110,13 +123,14 @@ function openCamera() {
 
     let t = input.clone()
     
-    // set tensor pixels outside roi black
+    // set tensor pixels outside roi black/white
+    let fillColor = document.getElementById('invert').checked ? 255 : 0
     for (var i = 0; i < width; i++) {
       for (var j = 0; j < height; j++) {
         if ((i < roiNorm[0] || i > roiNorm[2]) || (j < roiNorm[1] || j > roiNorm[3])) {
-          t.set(j, i, 0, 255)
-          t.set(j, i, 1, 255)
-          t.set(j, i, 2, 255)
+          t.set(j, i, 0, fillColor)
+          t.set(j, i, 1, fillColor)
+          t.set(j, i, 2, fillColor)
           t.set(j, i, 3, 255)
         }
       }
