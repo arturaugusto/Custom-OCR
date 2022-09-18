@@ -31,7 +31,7 @@ function openCamera() {
     pipeline = inputRoi
     
     pipeline = gm.grayscale(pipeline);
-    pipeline = gm.gaussianBlur(pipeline, 3, 3);
+    // pipeline = gm.gaussianBlur(pipeline, 3, 3);
 
 
     if (document.getElementById('invert').checked) {

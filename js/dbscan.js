@@ -1,14 +1,14 @@
 function dbscan(data) {
   let min_points = data.min_points
-  let eps = data.eps * 10000
+  let eps = data.eps// * 10000
 
   let dim = data.inputs[0].length
   
   let dataFlat = data.inputs.flat()
 
-  for (var i = dataFlat.length - 1; i >= 0; i--) {
-    dataFlat[i] = parseInt(dataFlat[i]*10000, 10)
-  }
+  // for (var i = dataFlat.length - 1; i >= 0; i--) {
+  //   dataFlat[i] = parseInt(dataFlat[i]*10000, 10)
+  // }
 
 
   let size = dataFlat.length
